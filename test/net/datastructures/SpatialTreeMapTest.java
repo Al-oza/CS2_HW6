@@ -3,6 +3,7 @@ package net.datastructures;
 import org.junit.Test;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -24,15 +25,13 @@ public class SpatialTreeMapTest {
 
     private SpatialTreeMap<Integer, Integer, Integer> medium() {
         SpatialTreeMap<Integer, Integer, Integer> m = new SpatialTreeMap<>();
-        int k = 0;
-        for (int i = -20; i < 20; i += 8) {
-            for (int j = -20; j < 20; j += 8) {
-                //System.out.println(new Coord<>(i,j));
-                m.put(new Coord<>(i, j), k);
-                k++;
-            }
+        Random r = new Random(2230); // deterministic
+        for (int n=0; n<20; n++) {
+            int i = r.nextInt(25);
+            int j = r.nextInt(25);
+            m.put(new Coord<>(i, j), n);
         }
-        //m.dump();
+        m.dump();
         return m;
     }
 
@@ -46,8 +45,8 @@ public class SpatialTreeMapTest {
     @Test
     public void testMediumPut() {
         SpatialTreeMap<Integer, Integer, Integer> m = medium();
-        assertEquals(25, m.size());
-        assertEquals(9, m.treeHeight());
+        assertEquals(20, m.size());
+        assertEquals(6, m.treeHeight());
     }
 
     @Test
@@ -65,9 +64,58 @@ public class SpatialTreeMapTest {
         SpatialTreeMap<Integer, Integer, Integer> m = medium();
         assertEquals(null, m.get(new Coord<>(0,2)));
         assertEquals(null, m.get(new Coord<>(0,0)));
-        assertEquals((int)1, (int)m.get(new Coord<>(-20,-12)));
-        assertEquals((int)10, (int)m.get(new Coord<>(-4, -20)));
-        assertEquals((int)20, (int)m.get(new Coord<>(12,-20)));
+        assertEquals((int)3, (int)m.get(new Coord<>(11,3)));
+        assertEquals((int)18, (int)m.get(new Coord<>(10, 15)));
+        assertEquals((int)12, (int)m.get(new Coord<>(1,1)));
+    }
+
+    @Test
+    public void smallSubMapTest() {
+        SpatialTreeMap<Integer, Integer, Integer> st = small();
+        Set<Coord<Integer, Integer>> found = new HashSet<>();
+        Visitor<Entry<Coord<Integer, Integer>, Integer>> s = new CountingVisitor<>();
+        //Visitor<Entry<Coord<Integer, Integer>, Integer>> s = new PrintVisitor<>();
+
+        for (Entry<Coord<Integer, Integer>, Integer> e : st.subMap(new Coord<Integer,Integer>(-2, 3), new Coord<Integer,Integer>(6, -6), s)) {
+            found.add(e.getKey());
+            //System.out.println(e);
+        }
+
+        assertEquals(3, found.size());
+        assertTrue(found.contains(new Coord<>(0,0)));
+        assertTrue(found.contains(new Coord<>(3,2)));
+        assertTrue(found.contains(new Coord<>(6,-5)));
+    }
+
+    @Test
+    public void smallSubMapEmptyTest() {
+        SpatialTreeMap<Integer, Integer, Integer> st = small();
+        Set<Coord<Integer, Integer>> found = new HashSet<>();
+        Visitor<Entry<Coord<Integer, Integer>, Integer>> s = new CountingVisitor<>();
+        //Visitor<Entry<Coord<Integer, Integer>, Integer>> s = new PrintVisitor<>();
+
+        for (Entry<Coord<Integer, Integer>, Integer> e : st.subMap(new Coord<Integer,Integer>(-10, 13), new Coord<Integer,Integer>(8, 8), s)) {
+            found.add(e.getKey());
+            //System.out.println(e);
+        }
+
+        assertEquals(0, found.size());
+    }
+
+    @Test
+    public void smallSubMapTest2() {
+        SpatialTreeMap<Integer, Integer, Integer> st = small();
+        Set<Coord<Integer, Integer>> found = new HashSet<>();
+        Visitor<Entry<Coord<Integer, Integer>, Integer>> s = new CountingVisitor<>();
+        //Visitor<Entry<Coord<Integer, Integer>, Integer>> s = new PrintVisitor<>();
+
+        for (Entry<Coord<Integer, Integer>, Integer> e : st.subMap(new Coord<Integer,Integer>(5, 10), new Coord<Integer,Integer>(15, 1), s)) {
+            found.add(e.getKey());
+            //System.out.println(e);
+        }
+
+        assertEquals(1, found.size());
+        assertTrue(found.contains(new Coord<>(7,7)));
     }
 
     @Test
@@ -80,14 +128,53 @@ public class SpatialTreeMapTest {
 
         for (Entry<Coord<Integer, Integer>, Integer> e : m.subMap(new Coord<Integer,Integer>(-10, 10), new Coord<Integer,Integer>(10, -10), s)) {
             found.add(e.getKey());
+            System.out.println(e);
+        }
+        assertEquals(6, found.size());
+        assertTrue(found.contains(new Coord<>(0, 10)));
+        assertTrue(found.contains(new Coord<>(6, 9)));
+        assertTrue(found.contains(new Coord<>(2, 6)));
+        assertTrue(found.contains(new Coord<>(10, 2)));
+        assertTrue(found.contains(new Coord<>(10, 1)));
+        assertTrue(found.contains(new Coord<>(1, 1)));
+    }
+
+
+    @Test
+    public void smallSubMapLinearTest2() {
+        SpatialTreeMap<Integer, Integer, Integer> st = small();
+        Set<Coord<Integer, Integer>> found = new HashSet<>();
+        Visitor<Entry<Coord<Integer, Integer>, Integer>> s = new CountingVisitor<>();
+        //Visitor<Entry<Coord<Integer, Integer>, Integer>> s = new PrintVisitor<>();
+
+        for (Entry<Coord<Integer, Integer>, Integer> e : st.subMapLinear(new Coord<Integer,Integer>(5, 10), new Coord<Integer,Integer>(15, 1), s)) {
+            found.add(e.getKey());
             //System.out.println(e);
         }
-        assertEquals(4, found.size());
-        assertTrue(found.contains(new Coord<>(-4, -4)));
-        assertTrue(found.contains(new Coord<>(4, -4)));
-        assertTrue(found.contains(new Coord<>(-4, 4)));
-        assertTrue(found.contains(new Coord<>(4, 4)));
+
+        assertEquals(1, found.size());
+        assertTrue(found.contains(new Coord<>(7,7)));
     }
+
+
+    @Test
+    public void smallSubMapLinearTest() {
+        SpatialTreeMap<Integer, Integer, Integer> st = small();
+        Set<Coord<Integer, Integer>> found = new HashSet<>();
+        Visitor<Entry<Coord<Integer, Integer>, Integer>> s = new CountingVisitor<>();
+        //Visitor<Entry<Coord<Integer, Integer>, Integer>> s = new PrintVisitor<>();
+
+        for (Entry<Coord<Integer, Integer>, Integer> e : st.subMapLinear(new Coord<Integer,Integer>(-2, 3), new Coord<Integer,Integer>(6, -6), s)) {
+            found.add(e.getKey());
+            //System.out.println(e);
+        }
+
+        assertEquals(3, found.size());
+        assertTrue(found.contains(new Coord<>(0,0)));
+        assertTrue(found.contains(new Coord<>(3,2)));
+        assertTrue(found.contains(new Coord<>(6,-5)));
+    }
+
 
     @Test
     public void mediumSubMapLinearTest() {
@@ -101,11 +188,28 @@ public class SpatialTreeMapTest {
             found.add(e.getKey());
             //System.out.println(e);
         }
-        assertEquals(4, found.size());
-        assertTrue(found.contains(new Coord<>(-4, -4)));
-        assertTrue(found.contains(new Coord<>(4, -4)));
-        assertTrue(found.contains(new Coord<>(-4, 4)));
-        assertTrue(found.contains(new Coord<>(4, 4)));
+        assertEquals(6, found.size());
+        assertTrue(found.contains(new Coord<>(0, 10)));
+        assertTrue(found.contains(new Coord<>(6, 9)));
+        assertTrue(found.contains(new Coord<>(2, 6)));
+        assertTrue(found.contains(new Coord<>(10, 2)));
+        assertTrue(found.contains(new Coord<>(10, 1)));
+        assertTrue(found.contains(new Coord<>(1, 1)));
+    }
+
+    @Test
+    public void smallSubMapLinearEmptyTest() {
+        SpatialTreeMap<Integer, Integer, Integer> st = small();
+        Set<Coord<Integer, Integer>> found = new HashSet<>();
+        Visitor<Entry<Coord<Integer, Integer>, Integer>> s = new CountingVisitor<>();
+        //Visitor<Entry<Coord<Integer, Integer>, Integer>> s = new PrintVisitor<>();
+
+        for (Entry<Coord<Integer, Integer>, Integer> e : st.subMapLinear(new Coord<Integer,Integer>(-10, 13), new Coord<Integer,Integer>(8, 8), s)) {
+            found.add(e.getKey());
+            //System.out.println(e);
+        }
+
+        assertEquals(0, found.size());
     }
 
 
