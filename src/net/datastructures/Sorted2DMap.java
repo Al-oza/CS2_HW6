@@ -14,5 +14,5 @@ package net.datastructures;
  */
 public interface Sorted2DMap<X,Y,V> extends Map<Coord<X,Y>,V>{
 
-    public Iterable<Entry<Coord<X,Y>,V>> subMap(Coord<X,Y> nwCorner, Coord<X,Y> seCorner, Visitor<Entry<Coord<X,Y>,V>> visitor) throws IllegalArgumentException;
+    public Iterable<Entry<Coord<X,Y>,V>> subMap(Coord<X,Y> nwCorner, Coord<X,Y> seCorner) throws IllegalArgumentException;
 }

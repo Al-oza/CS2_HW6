@@ -128,18 +128,6 @@ public class SpatialTreeMap<X,Y,V> extends AbstractMap<Coord<X,Y>,V> implements 
     return buffer;
   }
 
-  public Iterable<Entry<Coord<X,Y>,V>> subMapLinear(Coord<X,Y> nwCorner, Coord<X,Y> seCorner, Visitor<Entry<Coord<X,Y>,V>> visitor) throws IllegalArgumentException {
-    checkKey(nwCorner);
-    checkKey(seCorner);
-    ArrayList<Entry<Coord<X,Y>,V>> buffer = new ArrayList<>(size());
-
-    // use one of Tree's traversal methods to iterate through the elements of tree
-    // for each one check whether it is within the bounding box
-    // For each Position checked, call visitor.visit on it
-
-    return buffer;
-  }
-
   /**
    * Returns an iterable containing all entries with keys in the range from
    * <code>fromKey</code> inclusive to <code>toKey</code> exclusive.
@@ -147,22 +135,10 @@ public class SpatialTreeMap<X,Y,V> extends AbstractMap<Coord<X,Y>,V> implements 
    * @throws IllegalArgumentException if <code>fromKey</code> or <code>toKey</code> is not compatible with the map
    */
   @Override
-  public Iterable<Entry<Coord<X,Y>,V>> subMap(Coord<X,Y> nwCorner, Coord<X,Y> seCorner, Visitor<Entry<Coord<X,Y>,V>> visitor) throws IllegalArgumentException {
-    checkKey(nwCorner);
-    checkKey(seCorner);
-    ArrayList<Entry<Coord<X,Y>,V>> buffer = new ArrayList<>(size());
-    // only call subMapRecurse on a valid bounding box
-    if (compX.compare(nwCorner.getX(), seCorner.getX()) <= 0 && compY.compare(nwCorner.getY(), seCorner.getY()) >= 0)
-      subMapRecurse(nwCorner, seCorner, tree.root(), buffer, visitor);
-    return buffer;
-  }
-
-  // utility to fill subMap buffer recursively
-  private void subMapRecurse(Coord<X,Y> nwCorner, Coord<X,Y> seCorner, Position<Entry<Coord<X,Y>,V>> p,
-                             ArrayList<Entry<Coord<X,Y>,V>> buffer, Visitor<Entry<Coord<X,Y>,V>> visitor) {
-
-    // COMPLETE
-    // make sure to call visitor.visit on each Position that you look at
+  public Iterable<Entry<Coord<X,Y>,V>> subMap(Coord<X,Y> nwCorner, Coord<X,Y> seCorner) throws IllegalArgumentException {
+      // not part of the homework
+      // we need it here to satisfy the interface
+      return null;
   }
 
 
