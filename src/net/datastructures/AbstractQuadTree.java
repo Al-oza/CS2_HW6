@@ -37,7 +37,20 @@ public abstract class AbstractQuadTree<E> extends AbstractTree<E>
    */
   @Override
   public int numChildren(Position<E> p) {
-    return -1;
+    int count = 0;
+    if (nw(p) != null){
+      count++;
+    }
+    if (ne(p) != null){
+      count++;
+    }
+    if (sw(p) != null){
+      count++;
+    }
+    if (se(p) != null){
+      count++;
+    }
+    return count;
   }
 
   /**
@@ -49,7 +62,20 @@ public abstract class AbstractQuadTree<E> extends AbstractTree<E>
    */
   @Override
   public Iterable<Position<E>> children(Position<E> p) {
-    return null;
+    List<Position<E>> children = new ArrayList<>(4);
+    if (nw(p) != null){
+      children.add(nw(p));
+    }
+    if (ne(p) != null){
+      children.add(ne(p));
+    }
+    if (sw(p) != null){
+      children.add(sw(p));
+    }
+    if (se(p) != null){
+      children.add(se(p));
+    }
+    return children;
   }
 
 }

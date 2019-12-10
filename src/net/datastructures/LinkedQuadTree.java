@@ -26,6 +26,10 @@ public class LinkedQuadTree<E> extends AbstractQuadTree<E> {
   protected static class Node<E> implements Position<E> {
     private E element;          // an element stored at this node
     private Node<E> parent;     // a reference to the parent node (if any)
+    private Node<E> nw;
+    private Node<E> ne;
+    private Node<E> sw;
+    private Node<E> se;
       // add more instance variables
 
     /**
@@ -41,7 +45,10 @@ public class LinkedQuadTree<E> extends AbstractQuadTree<E> {
     public Node(E e, Node<E> above, Node<E> nwChild, Node<E> neChild, Node<E> swChild, Node<E> seChild) {
       element = e;
       parent = above;
-      // add more statements
+      nw = nwChild;
+      ne = neChild;
+      sw = swChild;
+      se = seChild;
     }
 
 
@@ -50,11 +57,43 @@ public class LinkedQuadTree<E> extends AbstractQuadTree<E> {
     @Override
     public E getElement() { return element; }
     public Node<E> getParent() { return parent; }
+    public Node<E> getNW() {
+      return nw;
+    }
+
+    public Node<E> getNE() {
+      return ne;
+    }
+
+    public Node<E> getSW() {
+      return sw;
+    }
+
+    public Node<E> getSE() {
+      return se;
+    }
+
 
     // update methods
     // add update methods (see LinkedBinaryTree for inspiration)
     public void setElement(E e) { element = e; }
     public void setParent(Node<E> parentNode) { parent = parentNode; }
+
+    public void setNW(Node<E> nwChild) {
+      nw = nwChild;
+    }
+
+    public void setNE(Node<E> neChild) {
+      ne = neChild;
+    }
+
+    public void setSW(Node<E> swChild) {
+      sw = swChild;
+    }
+
+    public void setSE(Node<E> seChild) {
+      se = seChild;
+    }
 
   } //----------- end of nested Node class -----------
 
@@ -134,7 +173,11 @@ public class LinkedQuadTree<E> extends AbstractQuadTree<E> {
    * @return the Position of the left child (or null if no child exists)
    * @throws IllegalArgumentException if p is not a valid Position for this tree
    */
-  // PUT nw method HERE
+  @Override
+  public Position<E> nw(Position<E> p) throws IllegalArgumentException {
+    Node<E> n = validate(p);
+    return n.getNW();
+  }
 
   /**
    * Returns the Position of p's NE child (or null if no child exists).
@@ -143,7 +186,11 @@ public class LinkedQuadTree<E> extends AbstractQuadTree<E> {
    * @return the Position of the right child (or null if no child exists)
    * @throws IllegalArgumentException if p is not a valid Position for this tree
    */
-  // PUT ne method HERE
+  @Override
+  public Position<E> ne(Position<E> p) throws IllegalArgumentException {
+    Node<E> n = validate(p);
+    return n.getNE();
+  }
 
   /**
    * Returns the Position of p's SW child (or null if no child exists).
@@ -152,7 +199,11 @@ public class LinkedQuadTree<E> extends AbstractQuadTree<E> {
    * @return the Position of the right child (or null if no child exists)
    * @throws IllegalArgumentException if p is not a valid Position for this tree
    */
-  // PUT sw method HERE
+  @Override
+  public Position<E> sw(Position<E> p) throws IllegalArgumentException {
+    Node<E> n = validate(p);
+    return n.getSW();
+  }
 
   /**
    * Returns the Position of p's SE child (or null if no child exists).
@@ -161,8 +212,11 @@ public class LinkedQuadTree<E> extends AbstractQuadTree<E> {
    * @return the Position of the right child (or null if no child exists)
    * @throws IllegalArgumentException if p is not a valid Position for this tree
    */
-  // PUT se method HERE
-
+  @Override
+  public Position<E> se(Position<E> p) throws IllegalArgumentException {
+    Node<E> n = validate(p);
+    return n.getSE();
+  }
   // update methods supported by this class
   /**
    * Places element e at the root of an empty tree and returns its new Position.
@@ -189,7 +243,14 @@ public class LinkedQuadTree<E> extends AbstractQuadTree<E> {
    */
   public Position<E> addNW(Position<E> p, E e)
                           throws IllegalArgumentException {
-    return null;
+    Node<E> parent = validate(p);
+    if (parent.getNW() != null){
+      throw new IllegalArgumentException("p already has a northwestern child!");
+    }
+    Node<E> child = createNode(e, parent, null, null, null, null);
+    parent.setNW(child);
+    size++;
+    return child;
   }
 
   /**
@@ -203,7 +264,13 @@ public class LinkedQuadTree<E> extends AbstractQuadTree<E> {
    */
   public Position<E> addNE(Position<E> p, E e)
                           throws IllegalArgumentException {
-    return null;
+    Node<E> parent = validate(p);
+    if (parent.getNE() != null){
+      throw new IllegalArgumentException("p already has a northeastern child!");
+    }
+    Node<E> child = createNode(e, parent, null, null, null, null);
+    parent.setNE(child);
+    return child;
   }
 
   /**
@@ -217,7 +284,14 @@ public class LinkedQuadTree<E> extends AbstractQuadTree<E> {
    */
   public Position<E> addSW(Position<E> p, E e)
           throws IllegalArgumentException {
-    return null;
+    Node<E> parent = validate(p);
+    if (parent.getSW() != null){
+      throw new IllegalArgumentException("p already has a southwestern child!");
+    }
+    Node<E> child = createNode(e, parent, null, null, null, null);
+    parent.setSW(child);
+    size++;
+    return child;
   }
 
   /**
@@ -231,7 +305,14 @@ public class LinkedQuadTree<E> extends AbstractQuadTree<E> {
    */
   public Position<E> addSE(Position<E> p, E e)
           throws IllegalArgumentException {
-      return null;
+    Node<E> parent = validate(p);
+    if (parent.getSE() != null){
+      throw new IllegalArgumentException("p already has a southeastern child!");
+    }
+    Node<E> child = createNode(e, parent, null, null, null, null);
+    parent.setSE(child);
+    size++;
+    return child;
   }
 
 
