@@ -57,14 +57,16 @@ public class SpatialTreeMap<X,Y,V> extends AbstractMap<Coord<X,Y>,V> implements 
    */
   @Override
   public int size() {
-      // COMPLETE
-      // keep in mind only internal nodes have elements
-      return -1;
+    return((tree.size()-1) / 3);
   }
 
   /** Utility used when inserting a new entry at a leaf of the tree */
   private void expandExternal(Position<Entry<Coord<X,Y>,V>> p, Entry<Coord<X,Y>,V> entry) {
-      // COMPLETE
+    tree.set(p, entry);
+    tree.addNW(p, null);
+    tree.addNE(p, null);
+    tree.addSW(p, null);
+    tree.addSE(p, null);
   }
 
 
@@ -74,8 +76,36 @@ public class SpatialTreeMap<X,Y,V> extends AbstractMap<Coord<X,Y>,V> implements 
    * @param p  a position of the tree serving as root of a subtree
    * @return Position holding key, or last node reached during search
    */
+
+  protected Position<Entry<Coord<X,Y>,V>> root() { return tree.root(); }
+  protected Position<Entry<Coord<X,Y>,V>> nw(Position<Entry<Coord<X,Y>,V>> p) { return tree.nw(p); }
+  protected Position<Entry<Coord<X,Y>,V>> ne(Position<Entry<Coord<X,Y>,V>> p) { return tree.ne(p); }
+  protected Position<Entry<Coord<X,Y>,V>> sw(Position<Entry<Coord<X,Y>,V>> p) { return tree.sw(p); }
+  protected Position<Entry<Coord<X,Y>,V>> se(Position<Entry<Coord<X,Y>,V>> p) { return tree.se(p); }
+  protected boolean isExternal(Position<Entry<Coord<X,Y>,V>> p) { return tree.isExternal(p); }
+  protected void set(Position<Entry<Coord<X,Y>,V>> p, Entry<Coord<X,Y>,V> e) { tree.set(p, e); }
+
   private Position<Entry<Coord<X,Y>,V>> treeSearch(Position<Entry<Coord<X,Y>,V>> p, Coord<X,Y> key) {
-      return null;
+    if (isExternal(p)){
+      return p;
+    }
+    int comp1 = compX.compare(key.getX(), p.getElement().getKey().getX());
+    int comp2 = compY.compare(key.getY(), p.getElement().getKey().getY());
+    if (comp1 == 0 && comp2 == 0){
+      return p;
+    }
+    else if (comp1 >= 0 && comp2 >= 0){
+      return treeSearch(ne(p), key);
+    }
+    else if (comp1 <= 0 && comp2 >= 0){
+      return treeSearch(nw(p), key);
+    }
+    else if (comp1 >= 0 && comp2 <=0){
+      return treeSearch(se(p), key);
+    }
+    else{
+      return treeSearch(sw(p), key);
+    }
   }
 
   /**
@@ -85,7 +115,10 @@ public class SpatialTreeMap<X,Y,V> extends AbstractMap<Coord<X,Y>,V> implements 
    */
   @Override
   public V get(Coord<X,Y> key) throws IllegalArgumentException {
-      return null;
+    checkKey(key);                          // may throw IllegalArgumentException
+    Position<Entry<Coord<X, Y>,V>> p = treeSearch(root(), key);
+    if (isExternal(p)) return null;         // unsuccessful search
+    return p.getElement().getValue();       // match found
   }
 
   /**
@@ -99,8 +132,17 @@ public class SpatialTreeMap<X,Y,V> extends AbstractMap<Coord<X,Y>,V> implements 
    */
   @Override
   public V put(Coord<X,Y> key, V value) throws IllegalArgumentException {
-    //COMPLETE
+    checkKey(key);                          // may throw IllegalArgumentException
+    Entry<Coord<X,Y>,V> newEntry = new MapEntry<>(key, value);
+    Position<Entry<Coord<X,Y>,V>> p = treeSearch(root(), key);
+    if (isExternal(p)) {                    // key is new
+      expandExternal(p, newEntry);
       return null;
+    } else {                                // replacing existing key
+      V old = p.getElement().getValue();
+      set(p, newEntry);
+      return old;
+    }
   }
 
   /**
